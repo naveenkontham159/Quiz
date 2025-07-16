@@ -4,6 +4,7 @@ import CategoriesScreen from '../screens/CategoriesScreen';
 import QuizTypesScreen from '../screens/QuizTypesScreen';
 import QuizScreen from '../screens/QuizScreen'; // if you have it
 
+
 const Stack = createNativeStackNavigator();
 
 export default function MainStack() {
@@ -12,6 +13,7 @@ export default function MainStack() {
       <Stack.Screen name="Categories" component={CategoriesScreen} />
       <Stack.Screen name="QuizTypes" component={QuizTypesScreen} />
       <Stack.Screen name="QuizScreen" component={QuizScreen} />
+      
     </Stack.Navigator>
   );
 }
