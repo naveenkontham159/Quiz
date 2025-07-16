@@ -76,10 +76,10 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#ff6f00',
-    paddingVertical: 12,
+    paddingVertical: 40,
     paddingHorizontal: 24,
     borderRadius: 8,
-    marginVertical: 8,
+    marginVertical: 20,
   },
   buttonText: {
     fontSize: 16,

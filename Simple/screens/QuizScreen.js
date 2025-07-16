@@ -12,7 +12,6 @@ export default function QuizScreen({ route, navigation }) {
   const { category, type } = route.params;
   const isDarkMode = useColorScheme() === 'dark';
 
-  // Dummy questions
   const dummyQuestions = [
     {
       question: 'What is the capital of India?',
@@ -32,7 +31,6 @@ export default function QuizScreen({ route, navigation }) {
     // Add more if needed
   ];
 
-  // Determine number of questions based on type
   const questionLimit = type === 'Quick Quiz' ? 10 : type === 'Challenge Mode' ? 20 : 30;
 
   const [questions, setQuestions] = useState([]);
@@ -40,7 +38,6 @@ export default function QuizScreen({ route, navigation }) {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    // Simulate fetching random questions
     const selected = dummyQuestions.slice(0, questionLimit);
     setQuestions(selected);
   }, []);
@@ -54,8 +51,9 @@ export default function QuizScreen({ route, navigation }) {
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex((prev) => prev + 1);
     } else {
+      // Auto-submit when last question is answered
       navigation.navigate('ResultsScreen', {
-        score,
+        score: option === current.correct ? score + 1 : score,
         total: questions.length,
         category,
         type,
@@ -72,6 +70,7 @@ export default function QuizScreen({ route, navigation }) {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Text style={styles.title}>{category.name} - {type}</Text>
       <Text style={styles.question}>{current.question}</Text>
+
       {current.options.map((option, index) => (
         <TouchableOpacity
           key={index}
@@ -81,6 +80,7 @@ export default function QuizScreen({ route, navigation }) {
           <Text style={styles.optionText}>{option}</Text>
         </TouchableOpacity>
       ))}
+
       <Text style={styles.progress}>
         Question {currentIndex + 1} of {questions.length}
       </Text>
