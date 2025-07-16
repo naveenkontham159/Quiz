@@ -6,54 +6,59 @@ import {
   StyleSheet,
   StatusBar,
   useColorScheme,
+  ActivityIndicator,
 } from 'react-native';
 
 export default function QuizScreen({ route, navigation }) {
   const { category, type } = route.params;
   const isDarkMode = useColorScheme() === 'dark';
 
-  const dummyQuestions = [
-    {
-      question: 'What is the capital of India?',
-      options: ['Mumbai', 'Delhi', 'Hyderabad', 'Chennai'],
-      correct: 'Delhi',
-    },
-    {
-      question: 'Who invented the telephone?',
-      options: ['Edison', 'Tesla', 'Bell', 'Newton'],
-      correct: 'Bell',
-    },
-    {
-      question: 'Which planet is known as the Red Planet?',
-      options: ['Earth', 'Mars', 'Jupiter', 'Venus'],
-      correct: 'Mars',
-    },
-    // Add more if needed
-  ];
-
-  const questionLimit = type === 'Quick Quiz' ? 10 : type === 'Challenge Mode' ? 20 : 30;
-
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const modeKey = type.toLowerCase().replace(/\s/g, '');
 
   useEffect(() => {
-    const selected = dummyQuestions.slice(0, questionLimit);
-    setQuestions(selected);
+    const fetchQuestions = async () => {
+      try {
+        const categoryMap = {
+          'General Knowledge': 'general_knowledge',
+          'Science & Technology': 'science_technology',
+          'History': 'history',
+          'Sports': 'sports',
+          'Movies & Entertainment': 'movies_entertainment',
+          'Geography': 'geography',
+          'Current Affairs': 'current_affairs',
+        };
+
+        const tableName = categoryMap[category.name];
+        const response = await fetch(`http://10.0.2.2:3000/questions/general_knowledge/quick`);
+        const data = await response.json();
+        console.log('Fetched questions:', data);
+        setQuestions(data);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
   }, []);
 
-  const handleAnswer = (option) => {
+  const handleAnswer = (selectedOptionKey) => {
     const current = questions[currentIndex];
-    if (option === current.correct) {
+    if (selectedOptionKey === current.correct_answer) {
       setScore((prev) => prev + 1);
     }
 
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // Auto-submit when last question is answered
       navigation.navigate('ResultsScreen', {
-        score: option === current.correct ? score + 1 : score,
+        score: selectedOptionKey === current.correct_answer ? score + 1 : score,
         total: questions.length,
         category,
         type,
@@ -61,9 +66,31 @@ export default function QuizScreen({ route, navigation }) {
     }
   };
 
-  if (questions.length === 0) return <Text>Loading questions...</Text>;
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#ff6f00" />
+        <Text style={{ marginTop: 10, color: '#777' }}>Loading questions...</Text>
+      </View>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center', color: '#777' }}>No questions available for this category.</Text>
+      </View>
+    );
+  }
 
   const current = questions[currentIndex];
+
+  const options = [
+    { key: 'A', text: current.option_a },
+    { key: 'B', text: current.option_b },
+    { key: 'C', text: current.option_c },
+    { key: 'D', text: current.option_d },
+  ];
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#f5f5f5' }]}>
@@ -71,13 +98,13 @@ export default function QuizScreen({ route, navigation }) {
       <Text style={styles.title}>{category.name} - {type}</Text>
       <Text style={styles.question}>{current.question}</Text>
 
-      {current.options.map((option, index) => (
+      {options.map((option) => (
         <TouchableOpacity
-          key={index}
+          key={option.key}
           style={styles.option}
-          onPress={() => handleAnswer(option)}
+          onPress={() => handleAnswer(option.key)}
         >
-          <Text style={styles.optionText}>{option}</Text>
+          <Text style={styles.optionText}>{option.key}. {option.text}</Text>
         </TouchableOpacity>
       ))}
 
