@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  useColorScheme,
   StatusBar,
 } from 'react-native';
+import { ThemeContext } from '../Features/ThemeContext'; // adjust path if needed
 
 export default function QuizTypesScreen({ route, navigation }) {
   const { category } = route.params;
-  const isDarkMode = useColorScheme() === 'dark';
+  const { isDarkMode } = useContext(ThemeContext);
 
   const quizTypes = [
     { id: '1', name: 'Quick Quiz' },
@@ -25,19 +25,30 @@ export default function QuizTypesScreen({ route, navigation }) {
     });
   };
 
+  const backgroundColor = isDarkMode ? '#121212' : '#f5f5f5';
+  const textColor = isDarkMode ? '#fff' : '#1a237e';
+  const subtitleColor = isDarkMode ? '#ccc' : '#555';
+  const cardBackground = isDarkMode ? '#1e1e1e' : '#fff';
+  const cardTextColor = isDarkMode ? '#fff' : '#1a237e';
+
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#f5f5f5' }]}>
+    <View style={[styles.container, { backgroundColor }]}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Text style={styles.title}>{category.name}</Text>
-      <Text style={styles.subtitle}>Choose Your Quiz Mode</Text>
+      <Text style={[styles.title, { color: textColor }]}>{category.name}</Text>
+      <Text style={[styles.subtitle, { color: subtitleColor }]}>
+        Choose Your Quiz Mode
+      </Text>
 
       {quizTypes.map((quiz) => (
         <TouchableOpacity
           key={quiz.id}
-          style={styles.card}
+          style={[styles.card, { backgroundColor: cardBackground }]}
           onPress={() => handleQuizTypeSelect(quiz.name)}
+          activeOpacity={0.85}
         >
-          <Text style={styles.cardText}>{quiz.name}</Text>
+          <Text style={[styles.cardText, { color: cardTextColor }]}>
+            {quiz.name}
+          </Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -54,18 +65,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1a237e',
     textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
     textAlign: 'center',
     marginBottom: 30,
   },
   card: {
-    backgroundColor: '#fff',
     padding: 16,
     marginVertical: 10,
     borderRadius: 10,
@@ -74,7 +82,6 @@ const styles = StyleSheet.create({
   },
   cardText: {
     fontSize: 16,
-    color: '#1a237e',
     fontWeight: '600',
   },
 });

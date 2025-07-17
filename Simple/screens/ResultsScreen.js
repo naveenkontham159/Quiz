@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  useColorScheme,
   StatusBar,
 } from 'react-native';
+import { ThemeContext } from '../Features/ThemeContext'; // adjust path if needed
 
 export default function ResultsScreen({ route, navigation }) {
   const { score, total, category, type } = route.params;
-  const isDarkMode = useColorScheme() === 'dark';
+  const { isDarkMode } = useContext(ThemeContext);
+
+  const backgroundColor = isDarkMode ? '#121212' : '#f5f5f5';
+  const textColor = isDarkMode ? '#fff' : '#1a237e';
+  const subtitleColor = isDarkMode ? '#ccc' : '#555';
+  const cardBackground = isDarkMode ? '#1e1e1e' : '#fff';
+  const cardTextColor = isDarkMode ? '#fff' : '#1a237e';
 
   const percentage = ((score / total) * 100).toFixed(0);
   const message =
@@ -21,18 +27,24 @@ export default function ResultsScreen({ route, navigation }) {
       : 'Keep practicing!';
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#f5f5f5' }]}>
+    <View style={[styles.container, { backgroundColor }]}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Text style={styles.title}>Results</Text>
-      <Text style={styles.subtitle}>{category.name} - {type}</Text>
-      <Text style={styles.score}>You scored {score} out of {total}</Text>
-      <Text style={styles.message}>{message}</Text>
+      <Text style={[styles.title, { color: textColor }]}>Results</Text>
+      <Text style={[styles.subtitle, { color: subtitleColor }]}>
+        {category.name} - {type}
+      </Text>
+      <Text style={[styles.score, { color: textColor }]}>
+        You scored {score} out of {total}
+      </Text>
+      <Text style={[styles.message, { color: subtitleColor }]}>{message}</Text>
 
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Categories')}
+        style={[styles.button, { backgroundColor: '#ff6f00' }]}
+        onPress={() => navigation.navigate('Home')} // ✅ changed from 'Categories' to 'Home'
       >
-        <Text style={styles.buttonText}>Back to Categories</Text>
+        <Text style={[styles.buttonText, { color: '#1a237e' }]}>
+          Back to Home
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -55,35 +67,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1a237e',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
     marginBottom: 20,
   },
   score: {
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 10,
-    color: '#333',
   },
   message: {
     fontSize: 16,
-    color: '#777',
     marginBottom: 30,
   },
   button: {
-    backgroundColor: '#ff6f00',
-    paddingVertical: 40,
+    paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 8,
-    marginVertical: 20,
+    marginVertical: 10,
   },
   buttonText: {
     fontSize: 16,
-    color: '#1a237e',
     fontWeight: 'bold',
   },
 });
