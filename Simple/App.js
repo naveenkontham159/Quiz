@@ -34,10 +34,10 @@ export default function App() {
         />
 
         <Stack.Screen
-        name="ResultsScreen"
+         name="ResultsScreen"
         component={ResultsScreen}
         options={{ title: 'Your Results' }}
-        />
+    />
 
      
       </Stack.Navigator>
