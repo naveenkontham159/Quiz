@@ -18,7 +18,14 @@ export default function QuizScreen({ route, navigation }) {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const modeKey = type.toLowerCase().replace(/\s/g, '');
+  const modeMap = {
+  'Quick Quiz': 'quick',
+  'Challenge Mode': 'challenge',
+  'Timed Quiz': 'timed',
+};
+
+  const modeKey = modeMap[type];
+
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -34,7 +41,7 @@ export default function QuizScreen({ route, navigation }) {
         };
 
         const tableName = categoryMap[category.name];
-        const response = await fetch(`http://10.0.2.2:3000/questions/general_knowledge/quick`);
+        const response = await fetch(`http://10.0.2.2:3000/questions/${tableName}/${modeKey}`);
         const data = await response.json();
         console.log('Fetched questions:', data);
         setQuestions(data);
